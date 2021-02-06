@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JS Drum Kit</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="keys">
+    <div data-key="65" class="key">
+      <!-- each keyboard key has specific keyCode number -->
+      <!-- data-key random stuff people made up -->
+      <kbd>A</kbd>
+      <span class="sound">clap</span>
+    </div>
+    <div data-key="83" class="key">
+      <kbd>S</kbd>
+      <span class="sound">hihat</span>
+    </div>
+    <div data-key="68" class="key">
+      <kbd>D</kbd>
+      <span class="sound">kick</span>
+    </div>
+    <div data-key="70" class="key">
+      <kbd>F</kbd>
+      <span class="sound">openhat</span>
+    </div>
+    <div data-key="71" class="key">
+      <kbd>G</kbd>
+      <span class="sound">boom</span>
+    </div>
+    <div data-key="72" class="key">
+      <kbd>H</kbd>
+      <span class="sound">ride</span>
+    </div>
+    <div data-key="74" class="key">
+      <kbd>J</kbd>
+      <span class="sound">snare</span>
+    </div>
+    <div data-key="75" class="key">
+      <kbd>K</kbd>
+      <span class="sound">tom</span>
+    </div>
+    <div data-key="76" class="key">
+      <kbd>L</kbd>
+      <span class="sound">tink</span>
+    </div>
+  </div>
+
+  <audio data-key="65" src="sounds/clap.wav"></audio>
+  <!-- connected to the div through data-key -->
+  <audio data-key="83" src="sounds/hihat.wav"></audio>
+  <audio data-key="68" src="sounds/kick.wav"></audio>
+  <audio data-key="70" src="sounds/openhat.wav"></audio>
+  <audio data-key="71" src="sounds/boom.wav"></audio>
+  <audio data-key="72" src="sounds/ride.wav"></audio>
+  <audio data-key="74" src="sounds/snare.wav"></audio>
+  <audio data-key="75" src="sounds/tom.wav"></audio>
+  <audio data-key="76" src="sounds/tink.wav"></audio>
+
+<script>
+  window.addEventListener("keydown", function(e) {
+    // adds event listener to entire window so when a key is pressed down then run function that calls e
+    // e is event handle that allows access to event handler object that contains info 
+    //console.log(e); shows info in console including keyCode
+    //console.log(e.keyCode); shows keyCode of key pressed
+
+    const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`);
+    // creating audio variable that selects the audio tag associated with the keyCode
+    // can't use data-key=65 because creates variable
+    // use ES6 template strings
+    //console.log(audio); shows audio element corresponding to key hit
+
+    //hitting other keys returns null
+    if (!audio) return; // stops the function from running if any other key is pressed
+
+    audio.play();
+
+    // if hit key repeatedly, sound only plays every few presses because audio is 1-2 sec long and won't play again if already playing
+    audio.currentTime = 0;
+    // rewinds audio to the beginning
+
+    const key = document.querySelector(`div[data-key="${e.keyCode}"]`);
+    // creating key variable that selects the div associated with the keyCode (to add animation)
+    //console.log(key); shows key divs
+
+    key.classList.add('playing');
+    // adds CSS class of playing to current key
+  });
+
+  // after pressing key, transitions stay so need to remove class of playing
+  //can't setTimeout(function) because might get desynced if CSS transition or JS timer time changes
+  // use transitionend event instead
+  function removeTransition(e) {
+    //console.log(e); shows all transition end events (each border, transform, box-shadow)
+    //only want to end transition on longest transition (transform)
+    
+    if (e.propertyName !== 'transform') return;
+    // skips the transition property if it isn't a transform one
+    //console.log(e.propertyName); shows transform after transition ends
+
+    this.classList.remove('playing');
+    // removes the CSS class of playing to current key
+    // console.log(this); shows key div
+    // this means whatever got called against it
+    // event listener was called and key got called against it so key is this 
+  }
+
+  const keys = document.querySelectorAll('.key');
+  // select all keys because want to listen for all of them to end transition
+  // returns node list of all keys
+
+  keys.forEach(key => key.addEventListener('transitionend', removeTransition));
+  // can't keys.addEventListener("transitionend"); because won't listen to individual nodes
+  // each key gets event listener added so when transition ends, runs function removeTransition
+
+</script>
+
+
+</body>
+</html>
