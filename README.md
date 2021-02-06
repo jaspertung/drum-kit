@@ -11,3 +11,5 @@ Things learned:
 - adding and removing class list
 - transition end event listener
 - stage, commit, and push changes to Github from local machine
+
+<img src="drum-kit-ss.png">
